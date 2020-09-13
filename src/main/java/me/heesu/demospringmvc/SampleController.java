@@ -7,17 +7,13 @@ import org.springframework.web.bind.annotation.*;
 @Controller
 public class SampleController {
 
-    @Autowired
-    SampleService sampleService;
-
-
     @GetMapping("/getStr")
     @ResponseBody
     public String getStr(@RequestBody String body){
         return body;
     }
 
-    @GetMapping("getJson")
+    @GetMapping("/getJson")
     @ResponseBody
     public DomainObj getJson(@RequestBody DomainObj e){
         return e;
