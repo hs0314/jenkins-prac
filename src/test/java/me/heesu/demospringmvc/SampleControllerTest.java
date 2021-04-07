@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.Marshaller;
@@ -21,17 +22,41 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest //@WebMvcTest와 다르게 웹 관련 bean뿐만 아니라 모든 bean을 등록
 @AutoConfigureMockMvc
 public class SampleControllerTest {
     @Autowired
     MockMvc mockMvc;
 
     @Autowired
+    PersonRepository personRepository;
+
+    @Autowired
     ObjectMapper mapper;
 
     @Autowired
     Marshaller marshaller;
+
+    @Test
+    public void test1() throws Exception {
+        this.mockMvc.perform(get("/test/heesu"))
+                .andDo(print())
+                .andExpect(content().string("test heesu"));
+    }
+
+    @Test
+    public void test2() throws Exception {
+        Person p = new Person();
+        p.setName("heesu");
+        Person savedPerson = personRepository.save(p);
+        // 도메인 클래스의 경우 Sping-jpa가 자동으로 컨버터를 등록해주기 때문에 따로 포매터, 컨버터를 만들지 않아도 된다.
+
+        this.mockMvc.perform(get("/test2")
+                .param("id", savedPerson.getId().toString()))
+                .andDo(print())
+                .andExpect(content().string("test2 heesu"));
+    }
+
 
     @Test
     public void getStringFormHttpBodyTest() throws Exception{
