@@ -53,6 +53,7 @@ public class RequestMappingControllerTest {
                     .accept(MediaType.TEXT_PLAIN_VALUE))
                 .andDo(print())
                 .andExpect(status().isOk())
+                .andExpect(content().string("onlyJson plz"))
         ;
     }
 

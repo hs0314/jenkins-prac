@@ -1,12 +1,15 @@
 package me.heesu.demospringmvc;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.oxm.Marshaller;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -16,6 +19,7 @@ import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.time.LocalDateTime;
+import java.util.regex.Matcher;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -38,6 +42,16 @@ public class SampleControllerTest {
     Marshaller marshaller;
 
     @Test
+    public void staticResourcesTest() throws Exception {
+        this.mockMvc.perform(get("/mobile/index.html"))
+        .andDo(print())
+        .andExpect(status().isOk())
+        .andExpect(content().string(Matchers.containsString("hello mobile index")))
+        .andExpect(header().exists(HttpHeaders.CACHE_CONTROL));
+
+    }
+
+    @Test
     public void test1() throws Exception {
         this.mockMvc.perform(get("/test/heesu"))
                 .andDo(print())
@@ -57,6 +71,22 @@ public class SampleControllerTest {
                 .andExpect(content().string("test2 heesu"));
     }
 
+    @Test
+    public void jsonMessage() throws Exception {
+        Person p = new Person();
+        p.setId(1000L);
+        p.setName("heesu");
+
+        String jsonString = mapper.writeValueAsString(p);
+
+        this.mockMvc.perform(get("/jsonMessage")
+                    .content(jsonString)
+                    .contentType(MediaType.APPLICATION_JSON_UTF8)
+                    .accept(MediaType.APPLICATION_JSON_UTF8))
+                .andDo(print())
+                .andExpect(status().isOk());
+    }
+
 
     @Test
     public void getStringFormHttpBodyTest() throws Exception{
@@ -64,7 +94,6 @@ public class SampleControllerTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("hello"));
-
     }
 
     @Test
@@ -94,7 +123,7 @@ public class SampleControllerTest {
 
         StringWriter writer = new StringWriter();
         Result result = new StreamResult(writer);
-        marshaller.marshal(e, result);
+        marshaller.marshal(e, result); // xml 변환
 
         String xmlStr = writer.toString();
 

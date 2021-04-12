@@ -4,11 +4,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.format.FormatterRegistrar;
 import org.springframework.format.FormatterRegistry;
+import org.springframework.http.CacheControl;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import javax.servlet.http.HttpServlet;
+import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
@@ -30,10 +33,24 @@ public class WebConfig implements WebMvcConfigurer {
          */
     }
 
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        /*
+         정적 리소스에 대한 리소스핸들러 셋팅
+         스프링부트는 기본적으로 정적리소스 핸들러와 캐싱 제공
+         */
+        registry.addResourceHandler("/mobile/**")
+                .addResourceLocations("classpath:/mobile/")
+                .setCacheControl(CacheControl.maxAge(10, TimeUnit.MINUTES));
+    }
+
     @Bean
     public Jaxb2Marshaller jaxb2Marshaller(){
         Jaxb2Marshaller jaxb2Marshaller = new Jaxb2Marshaller();
+
+        //packageToScan을 통해서 @XmlRootElement 어노테이션을 통해서 실제 xml변환이 필요한 객체를 명시
         jaxb2Marshaller.setPackagesToScan(DomainObj.class.getPackageName());
+        jaxb2Marshaller.setPackagesToScan(Person.class.getPackageName());
         return jaxb2Marshaller;
     }
 }
