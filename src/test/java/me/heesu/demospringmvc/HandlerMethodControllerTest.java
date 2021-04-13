@@ -6,12 +6,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.web.servlet.ModelAndView;
+
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
 @WebMvcTest
@@ -21,22 +24,47 @@ public class HandlerMethodControllerTest {
     MockMvc mockMvc;
 
     @Test
-    public void deleteEvent() throws Exception {
-        mockMvc.perform(get("/objs/1"))
+    public void getObjTest() throws Exception {
+        mockMvc.perform(get("/objs/1;name=heesu"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("id").value(1))
-                ;
+                .andExpect(jsonPath("name").value("heesu"));
     }
 
     @Test
-    public void getNamePost() throws Exception {
+    public void postObjTest() throws Exception {
         mockMvc.perform(post("/objs")
                     .param("name", "heesu")
-                    .param("limit", "99"))
+                    .param("limitEntry", "99"))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("name").value("heesu"))
         ;
+    }
+
+    @Test
+    public void getObjModelAttributeTest() throws Exception {
+        mockMvc.perform(post("/objs/model")
+                    .param("name", "heesu")
+                    .param("limitEntry", "-1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("name").value("heesu"));
+    }
+
+    @Test
+    public void getObjFormErrorTest() throws Exception {
+        ResultActions result = mockMvc.perform(post("/objects")
+                    .param("name", "heesu")
+                    .param("limitEntry", "-1"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(model().hasErrors());
+
+        ModelAndView mav = result.andReturn().getModelAndView();
+        Map<String, Object> model = mav.getModel();
+        System.out.print(model.size());
+
     }
 }

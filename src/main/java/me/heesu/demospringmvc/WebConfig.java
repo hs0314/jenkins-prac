@@ -7,8 +7,10 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.util.UrlPathHelper;
 
 import javax.servlet.http.HttpServlet;
 import java.util.concurrent.TimeUnit;
@@ -23,6 +25,17 @@ public class WebConfig implements WebMvcConfigurer {
         registry.addFormatter(new PersonFormatter());
     }
      */
+
+    /**
+     * @MatrixVariable 을 사용하기 위해서 요청url에서 세미콜론을 자동으로 지우지 않도록 처리
+     * @param configurer
+     */
+    @Override
+    public void configurePathMatch(PathMatchConfigurer configurer){
+        UrlPathHelper helper = new UrlPathHelper();
+        helper.setRemoveSemicolonContent(false);
+        configurer.setUrlPathHelper(helper);
+    }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
