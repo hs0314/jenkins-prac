@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form action="#" th:action="@{/objs/form/name}" method="post" th:object="${domain}">
+    <p th:if="${#fields.hasErrors('name')}" th:error="*{name}">Incorrect name.</p>
+    NAME : <input type="text" title="name" th:field="*{name}"/>
+    <input type="submit" value="submit"/>
+</form>
+
+</body>
+</html>

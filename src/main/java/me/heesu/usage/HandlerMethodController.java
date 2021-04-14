@@ -9,12 +9,15 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 
 import javax.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 @Controller
+@SessionAttributes("domain") // 해당 클래스안에서 모델에 들어가는 "domain" attribute를 세션에 셋팅
 public class HandlerMethodController {
     /**
      * uri 패턴에서 핸들러에 값 매핑
@@ -53,6 +56,15 @@ public class HandlerMethodController {
     /**
      * form submit 핸들링
      *  - html form 서브밋 된 데이터를 @RequestParam으로 핸들러에서 받을 수 있음
+     *
+     * @SessionAttributes
+     *  - 모델 정보를 HTTP 세션에 자동으로 저장
+     *   왜사용하는가?
+     *    - form을 여러 화면으로 나누어서 처리할때 직전단계의 값을 세션에 넣어서 뷰 별로 재사용 가능 (멀티폼)
+     *    - 장바구니 같이 정보가 남아있어야하는 경우
+     *   메서드 아규먼트로 사용하려면 SessionStatus를 사용
+     *
+     *   더 로우레벨로 사용하려면 HttpSession을 아규먼트로 받아서 사용해도 됌
      */
     @GetMapping("/objs/form")
     public String objForm(Model model) {
@@ -65,16 +77,61 @@ public class HandlerMethodController {
     }
 
     /**
+     * 멀티폼 서브밋 처리를 통한 session 사용
+     */
+    @GetMapping("/objs/form/name")
+    public String objNameForm(Model model) {
+        DomainObj d = new DomainObj();
+        model.addAttribute("domain", d); // 세션에 해당 model 객체가 들어감
+        return "/domain/form-name";
+    }
+    @GetMapping("/objs/form/limit")
+    public String objLimitForm(@ModelAttribute("domain") DomainObj domain, Model model) {
+        model.addAttribute("domain", domain); // 세션에 있는 domain객체를 @ModelAttribute를 통해서 꺼내고 model에 셋팅
+        return "/domain/form-limit";
+    }
+    @PostMapping("/objs/form/name")
+    public String objectFormNameSubmit(@Validated @ModelAttribute("domain") DomainObj domain,
+                            BindingResult bindingResult,
+                            Model model,
+                            SessionStatus sessionStatus
+    ){
+        if(bindingResult.hasErrors()){
+            return "/domain/form-name";
+        }
+        return "redirect:/objs/form/limit";
+    }
+    @PostMapping("/objs/form/limit")
+    public String objectFormLimitSubmit(@Validated @ModelAttribute("domain") DomainObj domain,
+                                       BindingResult bindingResult,
+                                       Model model,
+                                       SessionStatus sessionStatus
+    ){
+        if(bindingResult.hasErrors()){
+            return "/domain/form-limit";
+        }
+        // 메서드내애서 아규먼트로 SessionStatus를 받아서 특정시점에 세션만료 등 처리 가능
+        sessionStatus.setComplete();
+        return "redirect:/domain/list";
+    }
+
+
+    /**
      * form submit 에러 핸들링
      * @Validated, BindingResult를 이용한 에러 핸들링
      */
     @PostMapping("/objects")
     public String createObj(@Validated @ModelAttribute("domain") DomainObj domain,
-                             BindingResult bindingResult,
-                             Model model){
+                            BindingResult bindingResult,
+                            Model model,
+                            SessionStatus sessionStatus
+                            ){
         if(bindingResult.hasErrors()){
-            return "/domain/form";
+            return "/domain/form-name";
         }
+
+        // 메서드내애서 아규먼트로 SessionStatus를 받아서 특정시점에 세션만료 등 처리 가능
+        sessionStatus.setComplete();
 
         List<DomainObj> domainObjs = new ArrayList<>();
         domainObjs.add(domain);
@@ -84,7 +141,11 @@ public class HandlerMethodController {
     }
     // 중복 폼 서브밋 방지를 위해서 Post / Redirect / Get 패턴을 이용해서 브라우저의 리프레시 액션에 대응
     @GetMapping("/domain/list")
-    public String getDomainObjects(Model model){
+    public String getDomainObjects(Model model,
+                                   @SessionAttribute("visitTime")LocalDateTime visitTime){
+        //HttpSession 대신 @SessionAttribute를 사용하면 자동 형변환 처리를 해줌
+        System.out.println(visitTime);
+
         List<DomainObj> domainObjs = new ArrayList<>();
         DomainObj obj = new DomainObj();
         obj.setName("heesu");
@@ -113,4 +174,5 @@ public class HandlerMethodController {
 
         return reqObj;
     }
+
 }

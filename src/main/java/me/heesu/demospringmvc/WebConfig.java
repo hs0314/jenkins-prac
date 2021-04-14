@@ -40,6 +40,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(new SampleInterceptor());
+        registry.addInterceptor(new VisitTimeInterceptor());
         /* 아래와 같이 특정 url패턴, 순서를 설정할 수 있음
         .addPathPatterns("/test")
         .order(-1);
