@@ -1,4 +1,4 @@
-package me.heesu.demospringmvc;
+package me.heesu.demospringmvc.interceptor;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 /*
  HandlerInterceptor 인터페이스를 구현하고 해당 인터셉터를 WebMvcConfigurer를 통해서 추가해준다.
+ preHandle -> 요청처리 -> postHandle -> 뷰 렌더링 -> afterCompletion
  */
 public class SampleInterceptor implements HandlerInterceptor {
     @Override

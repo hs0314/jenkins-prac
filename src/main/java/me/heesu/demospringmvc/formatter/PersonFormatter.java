@@ -1,12 +1,12 @@
-package me.heesu.demospringmvc;
+package me.heesu.demospringmvc.formatter;
 
+import me.heesu.demospringmvc.domain.Person;
 import org.springframework.format.Formatter;
-import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.util.Locale;
 
-@Component
+//@Component
 public class PersonFormatter implements Formatter<Person> {
 
     @Override

@@ -10,20 +10,18 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.hasItems;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @RunWith(SpringRunner.class)
-@WebMvcTest
+@WebMvcTest // @WebMvcTest 어노테이션을 통해서 MockMvc빈을 얻어올 수 있고 특정 http요청에 대한 테스트를 진행할 수 있음
 public class RequestMappingControllerTest {
     @Autowired
     MockMvc mockMvc;
 
-    /**
-     * @WebMvcTest 어노테이션을 통해서 MockMvc빈을 얻어올 수 있고 특정 http요청에 대한 테스트를 진행할 수 있음
-     */
     @Test
     public void helloTest() throws Exception{
         mockMvc.perform(get("/hello"))
@@ -41,8 +39,7 @@ public class RequestMappingControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string("heesu"))
                 .andExpect(handler().handlerType(RequestMappingController.class))
-                .andExpect(handler().methodName("heesu"))  //url1 핸들러로 매핑되지 않는다
-                ;
+                .andExpect(handler().methodName("heesu"));
     }
 
 
@@ -64,8 +61,37 @@ public class RequestMappingControllerTest {
                 .header(HttpHeaders.AUTHORIZATION, "123")
                 .param("name", "heesu"))
                 .andDo(print())
-                .andExpect(status().isOk())
-        ;
+                .andExpect(status().isOk());
     }
+
+    @Test
+    public void httpHeadMethodTest() throws Exception {
+        mockMvc.perform(head("/hello")
+                        .param("name", "heesu"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("")); // head method는 응답본문이 없음
+
+    }
+
+    @Test
+    public void httpOptionsMethodTest() throws Exception {
+        mockMvc.perform(options("/hello")
+                        .param("name", "heesu"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(header().exists(HttpHeaders.ALLOW))
+                // 순서 상관없이 값 존재여부를 판단하기 위해서 아래와같이 테스트코드 작성
+                .andExpect(header().stringValues(HttpHeaders.ALLOW, hasItems(
+                        containsString("GET"),
+                        containsString("POST"),
+                        containsString("PUT"),
+                        containsString("PATCH"),
+                        containsString("DELETE"),
+                        containsString("HEAD"),
+                        containsString("OPTIONS"))));
+    }
+
+
 
 }

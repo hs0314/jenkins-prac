@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class RequestMappingController {
+
     /**
      * http 요청 매핑
      * 요청 메서드별 처리
@@ -15,8 +16,8 @@ public class RequestMappingController {
      * 방법2. @RequestMapping 어노테이션에 method 값 지정
      *    -> 동일한 매핑이 있는 경우, 가장 구체적으로 매팡되는 핸들러 선택
      */
-    //@RequestMapping(value = "/hello", method = RequestMethod.GET)
-    @GetHelloMapping
+    @RequestMapping(value = "/hello")
+    //@GetHelloMapping
     @ResponseBody
     public String hello(){
         return "hello";

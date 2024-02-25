@@ -1,13 +1,14 @@
 package me.heesu.demospringmvc;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import me.heesu.demospringmvc.domain.DomainObj;
+import me.heesu.demospringmvc.domain.Person;
+import me.heesu.demospringmvc.repository.PersonRepository;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +19,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import javax.xml.transform.Result;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
-import java.time.LocalDateTime;
-import java.util.regex.Matcher;
+import java.time.LocalDate;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
@@ -63,7 +63,7 @@ public class SampleControllerTest {
         Person p = new Person();
         p.setName("heesu");
         Person savedPerson = personRepository.save(p);
-        // 도메인 클래스의 경우 Sping-jpa가 자동으로 컨버터를 등록해주기 때문에 따로 포매터, 컨버터를 만들지 않아도 된다.
+        // 도메인 클래스의 경우 spring-data-jpa 가 자동으로 컨버터를 등록해주기 때문에 따로 포매터, 컨버터를 만들지 않아도 된다.
 
         this.mockMvc.perform(get("/test2")
                 .param("id", savedPerson.getId().toString()))
@@ -101,7 +101,7 @@ public class SampleControllerTest {
         DomainObj e = new DomainObj();
         e.setName("heesu");
         e.setLimitEntry(5);
-        e.setStartTime(LocalDateTime.now());
+        e.setStartDate(LocalDate.now());
 
         String jsonStr = mapper.writeValueAsString(e);
 

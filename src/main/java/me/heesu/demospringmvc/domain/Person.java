@@ -1,4 +1,4 @@
-package me.heesu.demospringmvc;
+package me.heesu.demospringmvc.domain;
 
 import lombok.Getter;
 import lombok.Setter;

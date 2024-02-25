@@ -1,4 +1,4 @@
-package me.heesu.demospringmvc;
+package me.heesu.demospringmvc.interceptor;
 
 import org.springframework.web.servlet.HandlerInterceptor;
 

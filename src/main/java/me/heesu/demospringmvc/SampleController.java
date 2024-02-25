@@ -1,21 +1,30 @@
 package me.heesu.demospringmvc;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import me.heesu.demospringmvc.domain.DomainObj;
+import me.heesu.demospringmvc.domain.Person;
+import me.heesu.demospringmvc.formatter.PersonFormatter;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 public class SampleController {
 
+
+    /**
+     * formatter를 이용한 String -> obj 컨버팅
+     * @see PersonFormatter
+     */
     @GetMapping("/test/{name}")
-    public String test(@PathVariable("name")Person person){
+    public String test(@PathVariable("name") Person person){
         // name을 Person의 name에 매핑하기 위해서는 formatter설정이 필요
         // formatter는 문자열과 객체의 변환에 대한 처리
         return "test "+person.getName();
     }
 
+    /**
+     * spring-data-jpa 를 이용해서 객체의 id를 이용해서 매핑되는 도메인 객체로 컨버팅
+     */
     @GetMapping("/test2")
-    public String test2(@RequestParam("id")Person person){
+    public String test2(@RequestParam("id") Person person){
         return "test2 "+person.getName();
     }
 

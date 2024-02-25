@@ -5,7 +5,7 @@
     <title>Title</title>
 </head>
 <body>
-<form action="#" th:action="@{/objects}" method="post" th:object="${domain}">
+<form action="#" th:action="@{/domain}" method="post" th:object="${domain}">
     <p th:if="${#fields.hasErrors('limitEntry')}" th:error="*{limitEntry}">Incorrect limitEntry.</p>
     <p th:if="${#fields.hasErrors('name')}" th:error="*{name}">Incorrect name.</p>
     <input type="text" title="name" th:field="*{name}"/>

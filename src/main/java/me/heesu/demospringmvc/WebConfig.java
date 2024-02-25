@@ -1,8 +1,11 @@
 package me.heesu.demospringmvc;
 
+import me.heesu.demospringmvc.domain.DomainObj;
+import me.heesu.demospringmvc.domain.Person;
+import me.heesu.demospringmvc.interceptor.SampleInterceptor;
+import me.heesu.demospringmvc.interceptor.VisitTimeInterceptor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.format.FormatterRegistrar;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.http.CacheControl;
 import org.springframework.oxm.jaxb.Jaxb2Marshaller;
@@ -12,19 +15,20 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.util.UrlPathHelper;
 
-import javax.servlet.http.HttpServlet;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
-    //스프링 부트에서는 formatter를 Bean등록 해놓으면 해당 부분은 따로 addFormatters메서드에서 추가할 필요 없음
-    /*
+    /**
+     * formatter 등록
+     *  - 스프링 부트에서는 formatter를 Bean등록 해놓으면 해당 부분은 따로 addFormatters메서드에서 추가할 필요 없음
+     * @param registry
+     */
     @Override
     public void addFormatters(FormatterRegistry registry){
-        registry.addFormatter(new PersonFormatter());
+       // registry.addFormatter(new PersonFormatter());
     }
-     */
 
     /**
      * @MatrixVariable 을 사용하기 위해서 요청url에서 세미콜론을 자동으로 지우지 않도록 처리
